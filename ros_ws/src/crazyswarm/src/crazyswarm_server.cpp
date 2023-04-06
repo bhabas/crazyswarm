@@ -19,6 +19,7 @@
 #include "crazyswarm/FullState.h"
 #include "crazyswarm/Position.h"
 #include "crazyswarm/VelocityWorld.h"
+#include "crazyswarm/GTC_Cmd.h"
 #include "std_srvs/Empty.h"
 #include <std_msgs/Empty.h>
 #include "geometry_msgs/Twist.h"
@@ -164,6 +165,8 @@ public:
     m_subscribeCmdFullState = n.subscribe(tf_prefix + "/cmd_full_state", 1, &CrazyflieROS::cmdFullStateSetpoint, this);
     m_subscribeCmdVelocityWorld = n.subscribe(tf_prefix + "/cmd_velocity_world", 1, &CrazyflieROS::cmdVelocityWorldSetpoint, this);
     m_subscribeCmdStop = n.subscribe(m_tf_prefix + "/cmd_stop", 1, &CrazyflieROS::cmdStop, this);
+
+    m_subscribeCmdGTC = n.subscribe("/cmd_GTC", 1, &CrazyflieROS::cmdGTCSetpoint_callback, this, ros::TransportHints().tcpNoDelay());
 
     // New Velocity command type (Hover)
     m_subscribeCmdHover=n.subscribe(m_tf_prefix+"/cmd_hover",1,&CrazyflieROS::cmdHoverSetpoint, this);
@@ -433,6 +436,17 @@ public:
       m_cf.sendPositionSetpoint(x, y, z, yaw);
       // m_sentSetpoint = true;
     // }
+  }
+  void cmdGTCSetpoint_callback(const crazyswarm::GTC_Cmd::ConstPtr& msg)
+  {
+    uint16_t cmd_type = msg->cmd_type;
+    float cmd_val1 = msg->cmd_vals.x;
+    float cmd_val2 = msg->cmd_vals.y;
+    float cmd_val3 = msg->cmd_vals.z;
+    float cmd_flag = msg->cmd_flag;
+
+    m_cf.sendGTCSetpoint(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag);
+
   }
 
   void cmdFullStateSetpoint(
@@ -757,6 +771,8 @@ private:
   ros::Subscriber m_subscribeCmdFullState;
   ros::Subscriber m_subscribeCmdVelocityWorld;
   ros::Subscriber m_subscribeCmdStop;
+
+  ros::Subscriber m_subscribeCmdGTC;
 
   ros::Subscriber m_subscribeCmdHover; // Hover vel subscriber
 

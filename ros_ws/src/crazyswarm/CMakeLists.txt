@@ -79,6 +79,7 @@ add_message_files(
   TrajectoryPolynomialPiece.msg
   Hover.msg
   Position.msg
+  GTC_Cmd.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -187,6 +188,10 @@ target_link_libraries(mocap_helper
   ${catkin_LIBRARIES}
   libmotioncapture
 )
+
+add_executable(vicon_spoofer src/vicon_spoofer.cpp)
+add_dependencies(vicon_spoofer ${catkin_EXPORTED_TARGETS})
+target_link_libraries(vicon_spoofer ${catkin_LIBRARIES})
 
 #############
 ## Install ##
