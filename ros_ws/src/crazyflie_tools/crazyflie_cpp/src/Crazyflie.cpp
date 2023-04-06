@@ -225,7 +225,7 @@ void Crazyflie::sendGTCSetpoint(
         cmd_flag);
     sendPacket(request);
 }
-asdfasd
+
 void Crazyflie::sendFullStateSetpoint(
     float x, float y, float z,
     float vx, float vy, float vz,

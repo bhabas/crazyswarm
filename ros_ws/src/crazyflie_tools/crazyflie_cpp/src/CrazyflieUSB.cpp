@@ -16,7 +16,7 @@ CrazyflieUSB::CrazyflieUSB(uint32_t devid)
 CrazyflieUSB::~CrazyflieUSB()
 {
     setCrtpToUsb(false);
-}dfasd
+}
 
 uint32_t CrazyflieUSB::numDevices()
 {
