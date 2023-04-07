@@ -193,6 +193,10 @@ add_executable(vicon_spoofer src/vicon_spoofer.cpp)
 add_dependencies(vicon_spoofer ${catkin_EXPORTED_TARGETS})
 target_link_libraries(vicon_spoofer ${catkin_LIBRARIES})
 
+add_executable(GTC_cmd_spoofer src/GTC_cmd_spoofer.cpp)
+add_dependencies(GTC_cmd_spoofer ${catkin_EXPORTED_TARGETS})
+target_link_libraries(GTC_cmd_spoofer ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############

@@ -171,6 +171,7 @@ public:
 
     // CUSTOM SUBSCRIBERS
     m_subscribeCmdGTC = n.subscribe("/cmd_GTC", 1, &CrazyflieROS::cmdGTC_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
+    m_subscribeExtPosition = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPositionUpdate, this, ros::TransportHints().tcpNoDelay());
 
     if (m_enableLogging) {
       m_logFile.open("logcf" + std::to_string(id) + ".csv");
@@ -449,6 +450,17 @@ public:
     m_cf.sendGTC_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag);
 
   }
+
+    void ExtPositionUpdate(
+    const crazyswarm::Position::ConstPtr& msg)
+    {
+        float x = msg->x;
+        float y = msg->y;
+        float z = msg->z;
+        float yaw = msg->yaw;
+        m_cf.sendExternalPositionUpdate(x, y, z);
+    }
+
 
   void cmdFullStateSetpoint(
     const crazyswarm::FullState::ConstPtr& msg)
@@ -773,9 +785,12 @@ private:
   ros::Subscriber m_subscribeCmdVelocityWorld;
   ros::Subscriber m_subscribeCmdStop;
 
-  ros::Subscriber m_subscribeCmdGTC;
-
   ros::Subscriber m_subscribeCmdHover; // Hover vel subscriber
+
+  ros::Subscriber m_subscribeCmdGTC;
+  ros::Subscriber m_subscribeExtPosition;
+
+
 
   tf::TransformBroadcaster m_br;
 

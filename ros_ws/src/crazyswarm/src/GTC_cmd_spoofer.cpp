@@ -1,7 +1,7 @@
 
 #include <ros/ros.h>
 #include "geometry_msgs/TransformStamped.h"
-#include "crazyswarm/Position.h"
+#include "crazyswarm/GTC_Cmd.h"
 
 class ViconSpoofer
 {
@@ -9,14 +9,17 @@ class ViconSpoofer
 
         ViconSpoofer(ros::NodeHandle *nh)
         {
-            viconPublisher = nh->advertise<crazyswarm::Position>("/vicon/cf1/cf1", 1);
+            viconPublisher = nh->advertise<crazyswarm::GTC_Cmd>("/cmd_GTC", 1);
 
-            ros::Rate rate(100);
+            ros::Rate rate(1);
             while(ros::ok)
             {
-                vicon_msg.x = 0.0;
-                vicon_msg.y = 0.0;
-                vicon_msg.z = 0.2;
+                vicon_msg.cmd_type = 5;
+                vicon_msg.cmd_vals.x = 1.1;
+                vicon_msg.cmd_vals.y = 2.2;
+                vicon_msg.cmd_vals.z = 3.3;
+                vicon_msg.cmd_flag = 4.4;
+
 
 
                 viconPublisher.publish(vicon_msg);
@@ -26,7 +29,7 @@ class ViconSpoofer
 
         ros::Publisher viconPublisher;
 
-        crazyswarm::Position vicon_msg;
+        crazyswarm::GTC_Cmd vicon_msg;
 
 };
 
