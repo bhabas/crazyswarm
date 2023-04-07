@@ -315,10 +315,10 @@ public:
     return true;
   }
 
-    void printTest()
+    void printTest(float x, float y, float z)
     {
 
-        printf("Heelo\n");
+        m_cf.sendExternalPositionUpdate(x, y, z);
     }
 
   bool uploadTrajectory(
@@ -902,11 +902,23 @@ public:
 
     if (m_useMotionCaptureObjectTracking) {
       for (auto cf : m_cfs) {
-        cf->printTest();
+        // cf->printTest(0.1,0.2,0.3);
+
+        
         bool found = publishRigidBody(cf->frame(), cf->id(), states);
         if (found) {
           cf->initializePositionIfNeeded(states.back().x, states.back().y, states.back().z);
+
+            cf->printTest(states.back().x, states.back().y, states.back().z);
         }
+
+
+        // const auto& iter = m_pMocapRigidBodies->find(cf->frame());
+        // if (iter != m_pMocapRigidBodies->end()) {
+        //     const auto& rigidBody = iter->second;
+            
+        // }
+        // std::cout << rigidBody.position().x() << std::endl;
       }
     } else {
       // run object tracker
@@ -1703,7 +1715,7 @@ public:
         auto endIteration = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = endIteration - startIteration;
         double elapsedSeconds = elapsed.count();
-        if (elapsedSeconds > 0.009) {
+        if (elapsedSeconds > 0.015) {
           ROS_WARN("Latency too high! Is %f s.", elapsedSeconds);
         }
 
