@@ -349,6 +349,8 @@ public:
     uint32_t pieceOffset,
     const std::vector<poly4d>& pieces);
 
+    void printTest();
+
   void startTrajectory(
     uint8_t trajectoryId,
     float timescale = 1.0,

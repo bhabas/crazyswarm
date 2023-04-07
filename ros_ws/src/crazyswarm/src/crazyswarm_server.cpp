@@ -315,6 +315,11 @@ public:
     return true;
   }
 
+    void printTest()
+    {
+
+        printf("Heelo\n");
+    }
 
   bool uploadTrajectory(
     crazyswarm::UploadTrajectory::Request& req,
@@ -897,6 +902,7 @@ public:
 
     if (m_useMotionCaptureObjectTracking) {
       for (auto cf : m_cfs) {
+        cf->printTest();
         bool found = publishRigidBody(cf->frame(), cf->id(), states);
         if (found) {
           cf->initializePositionIfNeeded(states.back().x, states.back().y, states.back().z);
