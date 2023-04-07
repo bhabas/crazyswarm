@@ -315,12 +315,7 @@ public:
     return true;
   }
 
-    void printTest(float x, float y, float z)
-    {
-
-        m_cf.sendExternalPositionUpdate(x, y, z);
-    }
-
+    
   bool uploadTrajectory(
     crazyswarm::UploadTrajectory::Request& req,
     crazyswarm::UploadTrajectory::Response& res)
@@ -444,17 +439,27 @@ public:
       // m_sentSetpoint = true;
     // }
   }
-  void cmdGTC_Cmd_callback(const crazyswarm::GTC_Cmd::ConstPtr& msg)
-  {
-    uint16_t cmd_type = msg->cmd_type;
-    float cmd_val1 = msg->cmd_vals.x;
-    float cmd_val2 = msg->cmd_vals.y;
-    float cmd_val3 = msg->cmd_vals.z;
-    float cmd_flag = msg->cmd_flag;
+    void cmdGTC_Cmd_callback(const crazyswarm::GTC_Cmd::ConstPtr& msg)
+    {
+        uint16_t cmd_type = msg->cmd_type;
+        float cmd_val1 = msg->cmd_vals.x;
+        float cmd_val2 = msg->cmd_vals.y;
+        float cmd_val3 = msg->cmd_vals.z;
+        float cmd_flag = msg->cmd_flag;
 
-    m_cf.sendGTC_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag);
+        m_cf.sendGTC_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag);
 
-  }
+    }
+
+    void sendExternalPosition_CRTP(float x, float y, float z)
+        {
+            m_cf.sendExternalPositionUpdate(x, y, z);
+        }
+
+    void semdExternalPose_CRTP(float x, float y, float z, float qx, float qy, float qz, float qw)
+    {
+        m_cf.sendExternalPoseUpdate(x, y, z, qx, qy, qz, qw);
+    }
 
     void ExtPositionUpdate(
     const crazyswarm::Position::ConstPtr& msg)
@@ -902,23 +907,12 @@ public:
 
     if (m_useMotionCaptureObjectTracking) {
       for (auto cf : m_cfs) {
-        // cf->printTest(0.1,0.2,0.3);
-
         
         bool found = publishRigidBody(cf->frame(), cf->id(), states);
         if (found) {
           cf->initializePositionIfNeeded(states.back().x, states.back().y, states.back().z);
-
-            cf->printTest(states.back().x, states.back().y, states.back().z);
         }
 
-
-        // const auto& iter = m_pMocapRigidBodies->find(cf->frame());
-        // if (iter != m_pMocapRigidBodies->end()) {
-        //     const auto& rigidBody = iter->second;
-            
-        // }
-        // std::cout << rigidBody.position().x() << std::endl;
       }
     } else {
       // run object tracker
@@ -978,18 +972,16 @@ public:
 
     {
       auto start = std::chrono::high_resolution_clock::now();
-      if (!m_sendPositionOnly) {
-        m_cfbc.sendExternalPoses(states);
-      } else {
-        std::vector<CrazyflieBroadcaster::externalPosition> positions(states.size());
-        for (size_t i = 0; i < positions.size(); ++i) {
-          positions[i].id = states[i].id;
-          positions[i].x  = states[i].x;
-          positions[i].y  = states[i].y;
-          positions[i].z  = states[i].z;
+       for (size_t i = 0; i < m_cfs.size(); ++i) {
+        if (!m_sendPositionOnly) {
+            m_cfs[i]->sendExternalPosition_CRTP(states.back().x, states.back().y, states.back().z);
+        } 
+        else {
+            m_cfs[i]->semdExternalPose_CRTP(states.back().x, states.back().y, states.back().z, 
+                    states.back().qx, states.back().qy, states.back().qz, states.back().qw);
         }
-        m_cfbc.sendExternalPositions(positions);
-      }
+       }
+      
       auto end = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> elapsedSeconds = end-start;
       m_latency.broadcasting = elapsedSeconds.count();
