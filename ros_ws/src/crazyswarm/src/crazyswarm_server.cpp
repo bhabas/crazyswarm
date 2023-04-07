@@ -166,10 +166,11 @@ public:
     m_subscribeCmdVelocityWorld = n.subscribe(tf_prefix + "/cmd_velocity_world", 1, &CrazyflieROS::cmdVelocityWorldSetpoint, this);
     m_subscribeCmdStop = n.subscribe(m_tf_prefix + "/cmd_stop", 1, &CrazyflieROS::cmdStop, this);
 
-    m_subscribeCmdGTC = n.subscribe("/cmd_GTC", 1, &CrazyflieROS::cmdGTCSetpoint_callback, this, ros::TransportHints().tcpNoDelay());
-
     // New Velocity command type (Hover)
     m_subscribeCmdHover=n.subscribe(m_tf_prefix+"/cmd_hover",1,&CrazyflieROS::cmdHoverSetpoint, this);
+
+    // CUSTOM SUBSCRIBERS
+    m_subscribeCmdGTC = n.subscribe("/cmd_GTC", 1, &CrazyflieROS::cmdGTC_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
 
     if (m_enableLogging) {
       m_logFile.open("logcf" + std::to_string(id) + ".csv");
@@ -437,7 +438,7 @@ public:
       // m_sentSetpoint = true;
     // }
   }
-  void cmdGTCSetpoint_callback(const crazyswarm::GTC_Cmd::ConstPtr& msg)
+  void cmdGTC_Cmd_callback(const crazyswarm::GTC_Cmd::ConstPtr& msg)
   {
     uint16_t cmd_type = msg->cmd_type;
     float cmd_val1 = msg->cmd_vals.x;
@@ -445,7 +446,7 @@ public:
     float cmd_val3 = msg->cmd_vals.z;
     float cmd_flag = msg->cmd_flag;
 
-    m_cf.sendGTCSetpoint(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag);
+    m_cf.sendGTC_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag);
 
   }
 

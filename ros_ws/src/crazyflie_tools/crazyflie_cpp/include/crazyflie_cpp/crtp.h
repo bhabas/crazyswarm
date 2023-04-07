@@ -1034,34 +1034,6 @@ struct crtpPositionSetpointRequest
 } __attribute__((packed));
 CHECKSIZE(crtpPositionSetpointRequest)
 
-struct crtpGTCSetpointRequest
-{
-    // REFERENCE (https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/crtp/crtp_generic_setpoint/)
-    // DEFINE CRTP 
-    const crtp header;  // Header value correlating port value [13], (Streaming setpoints use port 7)
-
-    // COMMAND VALUES
-    uint8_t cmd_type;  // Defines type of command sent, e.g. Pos ctrl, Vel ctrl, Tumble detection
-    float cmd_val1;     // Arbitrary values sent with command type depending on command issued
-    float cmd_val2;     // We can send up to [29] bytes of data
-    float cmd_val3;
-    float cmd_flag;     // Extra command value often used as a flag or extra float depending on command
-
-
-
-    // Constructor that initializes struct with default values (header,type) and values given (cmd_****)
-    crtpGTCSetpointRequest(uint8_t cmd_type, float cmd_val1, float cmd_val2, float cmd_val3, float cmd_flag)
-        :header(13,2), // Default values
-        cmd_type(cmd_type),
-        cmd_val1(cmd_val1),
-        cmd_val2(cmd_val2),
-        cmd_val3(cmd_val3),
-        cmd_flag(cmd_flag){} 
-    
-}__attribute__((packed));
-CHECKSIZE(crtpGTCSetpointRequest);
-
-
 
 // Port 0x07 (Generic Setpoint)
 
@@ -1301,6 +1273,33 @@ struct crtpCommanderHighLevelDefineTrajectoryRequest
 CHECKSIZE(crtpCommanderHighLevelDefineTrajectoryRequest)
 
 // Port 13 (Platform)
+
+struct crtpGTC_CmdRequest
+{
+
+    // PACKET VALUES
+    // REFERENCE (https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/crtp/)
+    const crtp header;  // Header value correlating port value [13], (Streaming setpoints use port 7)
+    uint8_t cmd_type;   // Define type of command sent, e.g. Pos ctrl, Vel ctrl, Tumble detection
+    float cmd_val1;     // Arbitrary values sent with command type depending on command issued
+    float cmd_val2;     // We can send up to [29] bytes of data
+    float cmd_val3;
+    float cmd_flag;     // Extra command value often used as a flag or extra float depending on command
+
+
+    // CONSTRUCTOR
+    crtpGTC_CmdRequest(uint8_t cmd_type, float cmd_val1, float cmd_val2, float cmd_val3, float cmd_flag)
+        :header(13,2),      // (Port,Channel) This is sent via app layer channel instead of setpoint
+        cmd_type(cmd_type),
+        cmd_val1(cmd_val1),
+        cmd_val2(cmd_val2),
+        cmd_val3(cmd_val3),
+        cmd_flag(cmd_flag){} 
+    
+}__attribute__((packed));
+CHECKSIZE(crtpGTC_CmdRequest);
+
+
 
 struct crtpGetProtocolVersionRequest
 {
