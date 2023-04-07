@@ -1038,11 +1038,10 @@ struct crtpGTCSetpointRequest
 {
     // REFERENCE (https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/crtp/crtp_generic_setpoint/)
     // DEFINE CRTP 
-    const crtp header;  // Header value correlating port value [07], (Streaming setpoints use port 7)
-    uint8_t type;       // Type of control setpoint, we use [9] to specify GTC setpoint type
+    const crtp header;  // Header value correlating port value [13], (Streaming setpoints use port 7)
 
     // COMMAND VALUES
-    uint16_t cmd_type;  // Defines type of command sent, e.g. Pos ctrl, Vel ctrl, Tumble detection
+    uint8_t cmd_type;  // Defines type of command sent, e.g. Pos ctrl, Vel ctrl, Tumble detection
     float cmd_val1;     // Arbitrary values sent with command type depending on command issued
     float cmd_val2;     // We can send up to [29] bytes of data
     float cmd_val3;
@@ -1051,8 +1050,8 @@ struct crtpGTCSetpointRequest
 
 
     // Constructor that initializes struct with default values (header,type) and values given (cmd_****)
-    crtpGTCSetpointRequest(uint16_t cmd_type, float cmd_val1, float cmd_val2, float cmd_val3, float cmd_flag)
-        :header(0X07,0),type(9), // Default values
+    crtpGTCSetpointRequest(uint8_t cmd_type, float cmd_val1, float cmd_val2, float cmd_val3, float cmd_flag)
+        :header(13,2), // Default values
         cmd_type(cmd_type),
         cmd_val1(cmd_val1),
         cmd_val2(cmd_val2),

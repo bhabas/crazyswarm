@@ -11,12 +11,15 @@ class ViconSpoofer
         {
             viconPublisher = nh->advertise<crazyswarm::GTC_Cmd>("/cmd_GTC", 1);
 
-            ros::Rate rate(4);
+            ros::Rate rate(1);
             while(ros::ok)
             {
-                vicon_msg.cmd_vals.x = 0.1;
-                vicon_msg.cmd_vals.y = 0.2;
-                vicon_msg.cmd_vals.z = 0.3;
+                vicon_msg.cmd_type = 5;
+                vicon_msg.cmd_vals.x = 1.1;
+                vicon_msg.cmd_vals.y = 2.2;
+                vicon_msg.cmd_vals.z = 3.3;
+                vicon_msg.cmd_flag = 4.4;
+
 
 
                 viconPublisher.publish(vicon_msg);
