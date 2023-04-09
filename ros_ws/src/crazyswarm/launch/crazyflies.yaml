@@ -1,5 +1,5 @@
 crazyflies:
 - channel: 80
   id: 1
-  initialPosition: [1.5, 1.5, 0.0]
+  initialPosition: [-0.02, 0.45, 0.04]
   type: default
