@@ -446,8 +446,9 @@ public:
         float cmd_val2 = msg->cmd_vals.y;
         float cmd_val3 = msg->cmd_vals.z;
         float cmd_flag = msg->cmd_flag;
+        float cmd_rx = msg->cmd_rx;
 
-        m_cf.sendGTC_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag);
+        m_cf.sendGTC_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
 
     }
 

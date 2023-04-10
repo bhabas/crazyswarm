@@ -2,3 +2,4 @@ Header header
 uint16 cmd_type
 geometry_msgs/Vector3 cmd_vals
 float32 cmd_flag
+bool cmd_rx

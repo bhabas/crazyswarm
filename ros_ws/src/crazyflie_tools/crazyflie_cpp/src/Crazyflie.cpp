@@ -217,12 +217,14 @@ void Crazyflie::sendHoverSetpoint(
 void Crazyflie::sendGTC_Cmd(
     uint16_t cmd_type,
     float cmd_val1, float cmd_val2, float cmd_val3,
-    float cmd_flag)
+    float cmd_flag,
+    bool cmd_rx)
 {
     crtpGTC_CmdRequest request(
         cmd_type,
         cmd_val1, cmd_val2, cmd_val3,
-        cmd_flag);
+        cmd_flag,
+        cmd_rx);
     sendPacket(request);
 }
 

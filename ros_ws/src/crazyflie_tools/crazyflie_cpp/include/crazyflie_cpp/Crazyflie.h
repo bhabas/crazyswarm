@@ -135,7 +135,8 @@ public:
     float cmd_val1,
     float cmd_val2,
     float cmd_val3,
-    float cmd_flag);
+    float cmd_flag,
+    bool cmd_rx);
 
   void sendFullStateSetpoint(
     float x, float y, float z,

@@ -3,41 +3,42 @@
 #include "geometry_msgs/TransformStamped.h"
 #include "crazyswarm/GTC_Cmd.h"
 
-class ViconSpoofer
+class GTC_CMD_Spoofer
 {
     public:
 
-        ViconSpoofer(ros::NodeHandle *nh)
+        GTC_CMD_Spoofer(ros::NodeHandle *nh)
         {
-            viconPublisher = nh->advertise<crazyswarm::GTC_Cmd>("/cmd_GTC", 1);
+            GTC_CMD_Publisher = nh->advertise<crazyswarm::GTC_Cmd>("/cmd_GTC", 1);
 
             ros::Rate rate(1);
             while(ros::ok)
             {
-                vicon_msg.cmd_type = 5;
-                vicon_msg.cmd_vals.x = 1.1;
-                vicon_msg.cmd_vals.y = 2.2;
-                vicon_msg.cmd_vals.z = 3.3;
-                vicon_msg.cmd_flag = 4.4;
+                CMD_msg.cmd_type = 5;
+                CMD_msg.cmd_vals.x = 1.1;
+                CMD_msg.cmd_vals.y = 2.2;
+                CMD_msg.cmd_vals.z = 3.3;
+                CMD_msg.cmd_flag = 4.4;
+                CMD_msg.cmd_rx = true;
 
 
 
-                viconPublisher.publish(vicon_msg);
+                GTC_CMD_Publisher.publish(CMD_msg);
                 rate.sleep();
             }
         }
 
-        ros::Publisher viconPublisher;
+        ros::Publisher GTC_CMD_Publisher;
 
-        crazyswarm::GTC_Cmd vicon_msg;
+        crazyswarm::GTC_Cmd CMD_msg;
 
 };
 
 int main(int argc, char **argv)
 {
-    ros::init(argc,argv,"Vicon_Spoofer");
+    ros::init(argc,argv,"GTC_CMD_Spoofer");
     ros::NodeHandle nh;
-    ViconSpoofer VS = ViconSpoofer(&nh);
+    GTC_CMD_Spoofer GTC_Spoofer = GTC_CMD_Spoofer(&nh);
     ros::spin();
     return 1;
 }
