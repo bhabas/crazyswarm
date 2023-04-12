@@ -170,7 +170,7 @@ public:
     m_subscribeCmdHover=n.subscribe(m_tf_prefix+"/cmd_hover",1,&CrazyflieROS::cmdHoverSetpoint, this);
 
     // CUSTOM SUBSCRIBERS
-    m_subscribeCmdGTC = n.subscribe("/cmd_GTC", 1, &CrazyflieROS::cmdGTC_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
+    m_subscribeCmdGTC = n.subscribe("/CF_DC/Cmd_CF_DC", 1, &CrazyflieROS::cmdGTC_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
     m_subscribeExtPosition = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPositionUpdate, this, ros::TransportHints().tcpNoDelay());
 
     if (m_enableLogging) {

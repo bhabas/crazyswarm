@@ -9,7 +9,7 @@ class GTC_CMD_Spoofer
 
         GTC_CMD_Spoofer(ros::NodeHandle *nh)
         {
-            GTC_CMD_Publisher = nh->advertise<crazyswarm::GTC_Cmd>("/cmd_GTC", 1);
+            GTC_CMD_Publisher = nh->advertise<crazyswarm::GTC_Cmd>("/CF_DC/Cmd_CF_DC", 1);
 
             ros::Rate rate(1);
             while(ros::ok)
