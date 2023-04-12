@@ -14,9 +14,9 @@ class ViconSpoofer
             ros::Rate rate(100);
             while(ros::ok)
             {
-                vicon_msg.x = 0.0;
-                vicon_msg.y = 0.0;
-                vicon_msg.z = 0.2;
+                vicon_msg.x = 0.2;
+                vicon_msg.y = 0.4;
+                vicon_msg.z = 0.6;
 
 
                 viconPublisher.publish(vicon_msg);

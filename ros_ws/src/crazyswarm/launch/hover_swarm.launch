@@ -9,7 +9,16 @@
       # Logging configuration (Use enable_logging to actually enable logging)
       genericLogTopics: ["log1"]
       genericLogTopicFrequencies: [10]
-      genericLogTopic_log1_Variables: ["stateEstimate.x", "ctrltarget.x"]
+
+      <!-- THIS IS MAXED OUT (26/26) BYTES -->
+      genericLogTopic_log1_Variables: [
+      "LogStates_GTC.Z_xy",    "LogStates_GTC.Z_z",
+      "LogStates_GTC.Z_vxy",   "LogStates_GTC.Z_vz",
+      "LogStates_GTC.Z_quat",
+      "LogStates_GTC.Z_wxy",
+      "LogStates_GTC.Z_Thetaxy",  "LogStates_GTC.Z_Tau",
+      ]
+
       
       # firmware parameters for all drones (use crazyflieTypes.yaml to set per type, or
       # allCrazyflies.yaml to set per drone)
@@ -36,7 +45,7 @@
       force_no_cache: False
       enable_parameters: True
       enable_logging: True
-      enable_logging_pose: True
+      enable_logging_pose: False
 
 
     </rosparam>

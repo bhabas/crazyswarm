@@ -14,7 +14,7 @@ class GTC_CMD_Spoofer
             ros::Rate rate(1);
             while(ros::ok)
             {
-                CMD_msg.cmd_type = 5;
+                CMD_msg.cmd_type = 1;
                 CMD_msg.cmd_vals.x = 1.1;
                 CMD_msg.cmd_vals.y = 2.2;
                 CMD_msg.cmd_vals.z = 3.3;
