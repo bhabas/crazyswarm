@@ -7,8 +7,8 @@
   <node pkg="crazyswarm" type="crazyswarm_server" name="crazyswarm_server" output="screen" >
     <rosparam>
       # Logging configuration (Use enable_logging to actually enable logging)
-      genericLogTopics: ["log1"]
-      genericLogTopicFrequencies: [10]
+      genericLogTopics: ["log1","log2","log3"]
+      genericLogTopicFrequencies: [20,20,20]
 
       <!-- THIS IS MAXED OUT (26/26) BYTES -->
       genericLogTopic_log1_Variables: [
@@ -17,6 +17,25 @@
       "LogStates_GTC.Z_quat",
       "LogStates_GTC.Z_wxy",
       "LogStates_GTC.Z_Thetaxy",  "LogStates_GTC.Z_Tau",
+      ]
+
+      <!-- THIS IS MAXED OUT (26/26) BYTES -->
+      genericLogTopic_log2_Variables: [
+      "LogStates_GTC.Z_wz",
+      "LogStates_GTC.Z_D_perp",
+      "LogStates_GTC.Z_FMz",   "LogStates_GTC.Z_Mxy",
+      "LogStates_GTC.Z_PWM12", "LogStates_GTC.Z_PWM34",
+      "LogStates_GTC.Z_NN_FP",
+      "LogFlipData_GTC.Flip_Flag",
+      "LogStates_GTC.Z_vbat"
+      ]
+
+      <!-- SIZE: (26/26) BYTES -->
+      genericLogTopic_log3_Variables: [
+      "LogSetPoints_GTC.Z_xy",   "LogSetPoints_GTC.Z_z",
+      "LogSetPoints_GTC.Z_vxy",  "LogSetPoints_GTC.Z_vz",
+      "LogSetPoints_GTC.Z_axy",  "LogSetPoints_GTC.Z_az",
+      "LogStates_GTC.Z_f_12",    "LogStates_GTC.Z_f_34",
       ]
 
       

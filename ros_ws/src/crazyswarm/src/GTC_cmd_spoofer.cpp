@@ -18,7 +18,7 @@ class GTC_CMD_Spoofer
                 CMD_msg.cmd_vals.x = 1.1;
                 CMD_msg.cmd_vals.y = 2.2;
                 CMD_msg.cmd_vals.z = 3.3;
-                CMD_msg.cmd_flag = 4.4;
+                CMD_msg.cmd_flag = 1.0;
                 CMD_msg.cmd_rx = true;
 
 
