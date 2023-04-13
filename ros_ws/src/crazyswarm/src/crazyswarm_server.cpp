@@ -974,12 +974,14 @@ public:
     {
       auto start = std::chrono::high_resolution_clock::now();
        for (size_t i = 0; i < m_cfs.size(); ++i) {
-        if (!m_sendPositionOnly) {
+        if (m_sendPositionOnly) {
             m_cfs[i]->sendExternalPosition_CRTP(states.back().x, states.back().y, states.back().z);
         } 
         else {
             m_cfs[i]->semdExternalPose_CRTP(states.back().x, states.back().y, states.back().z, 
-                    states.back().qx, states.back().qy, states.back().qz, states.back().qw);
+                    states.back().qx,states.back().qy,states.back().qz,states.back().qw);
+            // m_cfs[i]->semdExternalPose_CRTP(states.back().x, states.back().y, states.back().z, 
+            //         0.0f, -0.258819f, 0.0f, 0.9659258f);                    
         }
        }
       
