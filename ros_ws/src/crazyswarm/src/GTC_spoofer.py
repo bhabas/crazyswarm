@@ -9,11 +9,11 @@ def talker():
     # Create publisher with topic name and message type
     pub = rospy.Publisher('/CF_DC/Cmd_CF_DC', GTC_Cmd, queue_size=10)
     # Set the loop rate (in Hz)
-    rate = rospy.Rate(2) # 10 Hz
+    rate = rospy.Rate(1) # 10 Hz
     # Create a message object
     msg = GTC_Cmd()
 
-    msg.cmd_type = 1
+    msg.cmd_type = 11
     msg.cmd_vals.x = 0.1
     msg.cmd_vals.y = 0
     msg.cmd_vals.z = 0.4
