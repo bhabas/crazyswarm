@@ -79,7 +79,7 @@ add_message_files(
   TrajectoryPolynomialPiece.msg
   Hover.msg
   Position.msg
-  GTC_Cmd.msg
+  CTRL_Cmd.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -193,54 +193,6 @@ add_executable(vicon_spoofer src/vicon_spoofer.cpp)
 add_dependencies(vicon_spoofer ${catkin_EXPORTED_TARGETS})
 target_link_libraries(vicon_spoofer ${catkin_LIBRARIES})
 
-add_executable(GTC_cmd_spoofer src/GTC_cmd_spoofer.cpp)
-add_dependencies(GTC_cmd_spoofer ${catkin_EXPORTED_TARGETS})
-target_link_libraries(GTC_cmd_spoofer ${catkin_LIBRARIES})
-
-#############
-## Install ##
-#############
-
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark executables and/or libraries for installation
-# install(TARGETS crazyswarm crazyswarm_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
-
-## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
-
-#############
-## Testing ##
-#############
-
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_crazyswarm.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+add_executable(CTRL_cmd_spoofer src/CTRL_cmd_spoofer.cpp)
+add_dependencies(CTRL_cmd_spoofer ${catkin_EXPORTED_TARGETS})
+target_link_libraries(CTRL_cmd_spoofer ${catkin_LIBRARIES})

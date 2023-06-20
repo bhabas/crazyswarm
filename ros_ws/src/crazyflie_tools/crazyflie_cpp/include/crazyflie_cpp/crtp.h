@@ -1274,8 +1274,17 @@ CHECKSIZE(crtpCommanderHighLevelDefineTrajectoryRequest)
 
 // Port 13 (Platform)
 
-struct crtpGTC_CmdRequest
+struct crtpCTRL_CmdRequest
 {
+    // CONSTRUCTOR
+    crtpCTRL_CmdRequest(uint8_t cmd_type, float cmd_val1, float cmd_val2, float cmd_val3, float cmd_flag, bool cmd_rx)
+        :header(13,2),      // (Port,Channel) This is sent via app layer channel instead of setpoint
+        cmd_type(cmd_type),
+        cmd_val1(cmd_val1),
+        cmd_val2(cmd_val2),
+        cmd_val3(cmd_val3),
+        cmd_flag(cmd_flag),
+        cmd_rx(cmd_rx){} 
 
     // PACKET VALUES
     // REFERENCE (https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/crtp/)
@@ -1287,19 +1296,8 @@ struct crtpGTC_CmdRequest
     float cmd_flag;     // Extra command value often used as a flag or extra float depending on command
     bool  cmd_rx;
 
-
-    // CONSTRUCTOR
-    crtpGTC_CmdRequest(uint8_t cmd_type, float cmd_val1, float cmd_val2, float cmd_val3, float cmd_flag, bool cmd_rx)
-        :header(13,2),      // (Port,Channel) This is sent via app layer channel instead of setpoint
-        cmd_type(cmd_type),
-        cmd_val1(cmd_val1),
-        cmd_val2(cmd_val2),
-        cmd_val3(cmd_val3),
-        cmd_flag(cmd_flag),
-        cmd_rx(cmd_rx){} 
-    
 }__attribute__((packed));
-CHECKSIZE(crtpGTC_CmdRequest);
+CHECKSIZE(crtpCTRL_CmdRequest);
 
 
 

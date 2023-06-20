@@ -19,7 +19,7 @@
 #include "crazyswarm/FullState.h"
 #include "crazyswarm/Position.h"
 #include "crazyswarm/VelocityWorld.h"
-#include "crazyswarm/GTC_Cmd.h"
+#include "crazyswarm/CTRL_Cmd.h"
 #include "std_srvs/Empty.h"
 #include <std_msgs/Empty.h>
 #include "geometry_msgs/Twist.h"
@@ -170,7 +170,7 @@ public:
     m_subscribeCmdHover=n.subscribe(m_tf_prefix+"/cmd_hover",1,&CrazyflieROS::cmdHoverSetpoint, this);
 
     // CUSTOM SUBSCRIBERS
-    m_subscribeCmdGTC = n.subscribe("/CF_DC/Cmd_CF_DC", 1, &CrazyflieROS::cmdGTC_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
+    m_subscribeCmdCTRL = n.subscribe("/CF_DC/Cmd_CF_DC", 1, &CrazyflieROS::cmdCTRL_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
     m_subscribeExtPosition = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPositionUpdate, this, ros::TransportHints().tcpNoDelay());
 
     if (m_enableLogging) {
@@ -439,7 +439,7 @@ public:
       // m_sentSetpoint = true;
     // }
   }
-    void cmdGTC_Cmd_callback(const crazyswarm::GTC_Cmd::ConstPtr& msg)
+    void cmdCTRL_Cmd_callback(const crazyswarm::CTRL_Cmd::ConstPtr& msg)
     {
         uint16_t cmd_type = msg->cmd_type;
         float cmd_val1 = msg->cmd_vals.x;
@@ -448,7 +448,7 @@ public:
         float cmd_flag = msg->cmd_flag;
         float cmd_rx = msg->cmd_rx;
 
-        m_cf.sendGTC_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
+        m_cf.sendCTRL_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
 
     }
 
@@ -798,7 +798,7 @@ private:
 
   ros::Subscriber m_subscribeCmdHover; // Hover vel subscriber
 
-  ros::Subscriber m_subscribeCmdGTC;
+  ros::Subscriber m_subscribeCmdCTRL;
   ros::Subscriber m_subscribeExtPosition;
 
 

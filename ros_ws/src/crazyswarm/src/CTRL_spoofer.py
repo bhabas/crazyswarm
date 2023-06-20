@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 
 import rospy
-from crazyswarm.msg import GTC_Cmd
+from crazyswarm.msg import CTRL_Cmd
 
 def talker():
     # Initialize node
-    rospy.init_node('GTC_cmd_spoofer', anonymous=True)
+    rospy.init_node('CTRL_cmd_spoofer', anonymous=True)
     # Create publisher with topic name and message type
-    pub = rospy.Publisher('/CF_DC/Cmd_CF_DC', GTC_Cmd, queue_size=10)
+    pub = rospy.Publisher('/CF_DC/Cmd_CF_DC', CTRL_Cmd, queue_size=10)
     # Set the loop rate (in Hz)
     rate = rospy.Rate(1) # 10 Hz
     # Create a message object
-    msg = GTC_Cmd()
+    msg = CTRL_Cmd()
 
-    msg.cmd_type = 11
-    msg.cmd_vals.x = 0.1
+    msg.cmd_type = 5
+    msg.cmd_vals.x = 0
     msg.cmd_vals.y = 0
-    msg.cmd_vals.z = 0.4
-    msg.cmd_flag = 1.0
-    msg.cmd_rx = True
+    msg.cmd_vals.z = 0
+    msg.cmd_flag = 0.0
+    msg.cmd_rx = False
 
     while not rospy.is_shutdown():
         # Update the message header timestamp

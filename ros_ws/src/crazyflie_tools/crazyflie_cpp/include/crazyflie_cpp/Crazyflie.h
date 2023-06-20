@@ -130,7 +130,7 @@ public:
     float yawrate,
     uint16_t thrust);
 
-  void sendGTC_Cmd(
+  void sendCTRL_Cmd(
     uint16_t cmd_type,
     float cmd_val1,
     float cmd_val2,
