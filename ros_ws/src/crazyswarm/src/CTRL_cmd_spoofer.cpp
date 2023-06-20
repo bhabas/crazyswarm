@@ -9,13 +9,13 @@ class CTRL_CMD_Spoofer
 
         CTRL_CMD_Spoofer(ros::NodeHandle *nh)
         {
-            CTRL_CMD_Publisher = nh->advertise<crazyswarm::CTRL_Cmd>("/CF_DC/Cmd_CF_DC", 1);
+            CTRL_CMD_Publisher = nh->advertise<crazyswarm::CTRL_Cmd>("/SAR_DC/CMD_Output_Topic", 1);
 
             ros::Rate rate(1);
             while(ros::ok)
             {
-                CMD_msg.cmd_type = 0;
-                CMD_msg.cmd_vals.x = 1.1;
+                CMD_msg.cmd_type = 5;
+                CMD_msg.cmd_vals.x = 0;
                 CMD_msg.cmd_vals.y = 2.2;
                 CMD_msg.cmd_vals.z = 3.3;
                 CMD_msg.cmd_flag = 1.0;
