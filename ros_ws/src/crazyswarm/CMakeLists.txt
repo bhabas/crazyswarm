@@ -189,10 +189,10 @@ target_link_libraries(mocap_helper
   libmotioncapture
 )
 
-add_executable(vicon_spoofer src/vicon_spoofer.cpp)
-add_dependencies(vicon_spoofer ${catkin_EXPORTED_TARGETS})
-target_link_libraries(vicon_spoofer ${catkin_LIBRARIES})
+# add_executable(vicon_spoofer src/vicon_spoofer.cpp)
+# add_dependencies(vicon_spoofer ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(vicon_spoofer ${catkin_LIBRARIES})
 
-add_executable(CTRL_cmd_spoofer src/CTRL_cmd_spoofer.cpp)
-add_dependencies(CTRL_cmd_spoofer ${catkin_EXPORTED_TARGETS})
-target_link_libraries(CTRL_cmd_spoofer ${catkin_LIBRARIES})
+# add_executable(CTRL_cmd_spoofer src/CTRL_cmd_spoofer.cpp)
+# add_dependencies(CTRL_cmd_spoofer ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(CTRL_cmd_spoofer ${catkin_LIBRARIES})
