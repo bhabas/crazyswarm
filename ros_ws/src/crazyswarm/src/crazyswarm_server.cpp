@@ -171,7 +171,7 @@ public:
 
     // CUSTOM SUBSCRIBERS
     m_subscribeCmdCTRL = n.subscribe("/SAR_DC/CMD_Output_Topic", 1, &CrazyflieROS::cmdCTRL_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
-    m_subscribeViconSpoofer = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPositionUpdate, this, ros::TransportHints().tcpNoDelay());
+    m_subscribeViconSpoofer = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPoseUpdate, this, ros::TransportHints().tcpNoDelay());
 
     if (m_enableLogging) {
       m_logFile.open("logcf" + std::to_string(id) + ".csv");
@@ -470,6 +470,21 @@ public:
         float z = msg->z;
         float yaw = msg->yaw;
         m_cf.sendExternalPositionUpdate(x, y, z);
+    }
+
+    void ExtPoseUpdate(
+    const geometry_msgs::Pose::ConstPtr& msg)
+    {
+        float x = msg->position.x;
+        float y = msg->position.y;
+        float z = msg->position.z;
+
+        float qx = msg->orientation.x;  
+        float qy = msg->orientation.y;
+        float qz = msg->orientation.z;
+        float qw = msg->orientation.w;
+
+        m_cf.sendExternalPoseUpdate(x, y, z, qx, qy, qz, qw);
     }
 
 
