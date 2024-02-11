@@ -19,6 +19,7 @@
 #include "crazyswarm/FullState.h"
 #include "crazyswarm/Position.h"
 #include "crazyswarm/VelocityWorld.h"
+#include "crazyswarm/CTRL_Cmd.h"
 #include "std_srvs/Empty.h"
 #include <std_msgs/Empty.h>
 #include "geometry_msgs/Twist.h"
@@ -168,6 +169,10 @@ public:
     // New Velocity command type (Hover)
     m_subscribeCmdHover=n.subscribe(m_tf_prefix+"/cmd_hover",1,&CrazyflieROS::cmdHoverSetpoint, this);
 
+    // CUSTOM SUBSCRIBERS
+    m_subscribeCmdCTRL = n.subscribe("/SAR_DC/CMD_Output_Topic", 1, &CrazyflieROS::cmdCTRL_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
+    m_subscribeViconSpoofer = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPoseUpdate, this, ros::TransportHints().tcpNoDelay());
+
     if (m_enableLogging) {
       m_logFile.open("logcf" + std::to_string(id) + ".csv");
       m_logFile << "time,";
@@ -310,7 +315,7 @@ public:
     return true;
   }
 
-
+    
   bool uploadTrajectory(
     crazyswarm::UploadTrajectory::Request& req,
     crazyswarm::UploadTrajectory::Response& res)
@@ -434,6 +439,54 @@ public:
       // m_sentSetpoint = true;
     // }
   }
+    void cmdCTRL_Cmd_callback(const crazyswarm::CTRL_Cmd::ConstPtr& msg)
+    {
+        uint16_t cmd_type = msg->cmd_type;
+        float cmd_val1 = msg->cmd_vals.x;
+        float cmd_val2 = msg->cmd_vals.y;
+        float cmd_val3 = msg->cmd_vals.z;
+        float cmd_flag = msg->cmd_flag;
+        float cmd_rx = msg->cmd_rx;
+
+        m_cf.sendCTRL_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
+
+    }
+
+    void sendExternalPosition_CRTP(float x, float y, float z)
+        {
+            m_cf.sendExternalPositionUpdate(x, y, z);
+        }
+
+    void semdExternalPose_CRTP(float x, float y, float z, float qx, float qy, float qz, float qw)
+    {
+        m_cf.sendExternalPoseUpdate(x, y, z, qx, qy, qz, qw);
+    }
+
+    void ExtPositionUpdate(
+    const crazyswarm::Position::ConstPtr& msg)
+    {
+        float x = msg->x;
+        float y = msg->y;
+        float z = msg->z;
+        float yaw = msg->yaw;
+        m_cf.sendExternalPositionUpdate(x, y, z);
+    }
+
+    void ExtPoseUpdate(
+    const geometry_msgs::Pose::ConstPtr& msg)
+    {
+        float x = msg->position.x;
+        float y = msg->position.y;
+        float z = msg->position.z;
+
+        float qx = msg->orientation.x;  
+        float qy = msg->orientation.y;
+        float qz = msg->orientation.z;
+        float qw = msg->orientation.w;
+
+        m_cf.sendExternalPoseUpdate(x, y, z, qx, qy, qz, qw);
+    }
+
 
   void cmdFullStateSetpoint(
     const crazyswarm::FullState::ConstPtr& msg)
@@ -760,6 +813,11 @@ private:
 
   ros::Subscriber m_subscribeCmdHover; // Hover vel subscriber
 
+  ros::Subscriber m_subscribeCmdCTRL;
+  ros::Subscriber m_subscribeViconSpoofer;
+
+
+
   tf::TransformBroadcaster m_br;
 
   std::vector<crazyswarm::LogBlock> m_logBlocks;
@@ -865,10 +923,12 @@ public:
 
     if (m_useMotionCaptureObjectTracking) {
       for (auto cf : m_cfs) {
+        
         bool found = publishRigidBody(cf->frame(), cf->id(), states);
         if (found) {
           cf->initializePositionIfNeeded(states.back().x, states.back().y, states.back().z);
         }
+
       }
     } else {
       // run object tracker
@@ -928,18 +988,18 @@ public:
 
     {
       auto start = std::chrono::high_resolution_clock::now();
-      if (!m_sendPositionOnly) {
-        m_cfbc.sendExternalPoses(states);
-      } else {
-        std::vector<CrazyflieBroadcaster::externalPosition> positions(states.size());
-        for (size_t i = 0; i < positions.size(); ++i) {
-          positions[i].id = states[i].id;
-          positions[i].x  = states[i].x;
-          positions[i].y  = states[i].y;
-          positions[i].z  = states[i].z;
+       for (size_t i = 0; i < m_cfs.size(); ++i) {
+        if (m_sendPositionOnly) {
+            m_cfs[i]->sendExternalPosition_CRTP(states.back().x, states.back().y, states.back().z);
+        } 
+        else {
+            m_cfs[i]->semdExternalPose_CRTP(states.back().x, states.back().y, states.back().z, 
+                    states.back().qx,states.back().qy,states.back().qz,states.back().qw);
+            // m_cfs[i]->semdExternalPose_CRTP(states.back().x, states.back().y, states.back().z, 
+            //         0.0f, -0.258819f, 0.0f, 0.9659258f);                    
         }
-        m_cfbc.sendExternalPositions(positions);
-      }
+       }
+      
       auto end = std::chrono::high_resolution_clock::now();
       std::chrono::duration<double> elapsedSeconds = end-start;
       m_latency.broadcasting = elapsedSeconds.count();
@@ -1665,7 +1725,7 @@ public:
         auto endIteration = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = endIteration - startIteration;
         double elapsedSeconds = elapsed.count();
-        if (elapsedSeconds > 0.009) {
+        if (elapsedSeconds > 0.015) {
           ROS_WARN("Latency too high! Is %f s.", elapsedSeconds);
         }
 
