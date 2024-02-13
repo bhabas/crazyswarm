@@ -68,6 +68,7 @@ add_service_files(
   Takeoff.srv
   UpdateParams.srv
   UploadTrajectory.srv
+  SetPose.srv
 )
 
 add_message_files(
