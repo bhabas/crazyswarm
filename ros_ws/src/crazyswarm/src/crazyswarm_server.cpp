@@ -410,33 +410,54 @@ public:
     
     bool cmdSendCtrlCmd(crazyswarm::CTRL_Cmd::Request& req, crazyswarm::CTRL_Cmd::Response& res)
     {
-        uint16_t cmd_ID = dis(gen);
-        uint16_t cmd_type = req.cmd_type;
-        float cmd_val1 = req.cmd_vals.x;
-        float cmd_val2 = req.cmd_vals.y;
-        float cmd_val3 = req.cmd_vals.z;
-        float cmd_flag = req.cmd_flag;
-        float cmd_rx = req.cmd_rx;
+        // CREATE ID FOR CMD MESSAGE
+        cmd_ID_tx = dis(gen);
 
-        ros::Rate rate(2);
-        auto start = ros::Time::now();
-        auto timeout = ros::Duration(5.0); // 5 seconds timeout
+        // LOAD CMD VALUES
+        cmd_type = req.cmd_type;
+        cmd_val1 = req.cmd_vals.x;
+        cmd_val2 = req.cmd_vals.y;
+        cmd_val3 = req.cmd_vals.z;
+        cmd_flag = req.cmd_flag;
+        cmd_rx = req.cmd_rx;
 
-        // while (ros::Time::now() - start < timeout)
-        // {
-        //     rate.sleep();
-        // }
+        // LOAD CMD SEND TIME
+        cmd_time = ros::Time::now();
+        cmd_timeout = ros::Duration(5.0); // 5 seconds timeout
+        cmd_active_flag = true;
         
-        m_cf.sendCTRL_Cmd(cmd_ID,cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
-
-        
+        // SEND CMD MESSAGE
+        m_cf.sendCTRL_Cmd(cmd_ID_tx, cmd_type, cmd_val1, cmd_val2, cmd_val3, cmd_flag, cmd_rx);
 
         return true;
     }
 
     void CMD_RX_callback(const crazyswarm::GenericLogData::ConstPtr& msg)
     {
-        // CMD_RX_flag = (bool)msg->values[0];
+        // LOAD CMD_RX_ID
+        cmd_ID_rx = (uint16_t)msg->values[0];
+
+        // IF CMD CALL IS ACTIVE AND DURATION IS LESS THAN TIMEOUT
+        if (cmd_active_flag == true && ros::Time::now() - cmd_time < cmd_timeout )
+        {
+            
+            if (cmd_ID_rx != cmd_ID_tx) // IF cmd_ID_rx DOES NOT MATCH cmd_ID_tx THEN RESEND CMD
+            {
+                ROS_WARN("cmd_ID_rx != cmd_ID_tx, Resending CMD...");
+                m_cf.sendCTRL_Cmd(cmd_ID_tx, cmd_type, cmd_val1, cmd_val2, cmd_val3, cmd_flag, cmd_rx);
+            }
+            else
+            {
+                // ROS_INFO("cmd_ID_rx == cmd_ID_tx, CMD Success");
+                cmd_active_flag = false;
+            }
+        }
+        else if (cmd_active_flag == true && ros::Time::now() - cmd_time > cmd_timeout)
+        {
+            ROS_WARN("CMD sending timeout. Stopping CMD send");
+            cmd_active_flag = false;
+        }
+
     }
 
     void sendExternalPosition_CRTP(float x, float y, float z)
@@ -803,11 +824,25 @@ private:
   ros::ServiceServer m_serviceCmd_Ctrl;  
   ros::Subscriber m_subscribeCmd_RX;
   ros::Subscriber m_subscribeViconSpoofer;
-  bool CMD_RX_flag = false;
+
+  // CUSTOM VARIABLES  
+  bool cmd_active_flag = false;
+  uint16_t cmd_ID_rx = 0;
+  uint16_t cmd_ID_tx = 0;
+  
+  uint16_t cmd_type = 99;
+  float cmd_val1 = 0.0;
+  float cmd_val2 = 0.0;
+  float cmd_val3 = 0.0;
+  float cmd_flag = 0.0;
+  float cmd_rx = 0.0;
+
 
   std::random_device rd;
   std::mt19937 gen;
   std::uniform_int_distribution<uint16_t> dis;
+  ros::Time cmd_time;
+  ros::Duration cmd_timeout;
 
 
 
