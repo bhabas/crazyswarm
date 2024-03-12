@@ -69,6 +69,7 @@ add_service_files(
   UpdateParams.srv
   UploadTrajectory.srv
   SetPose.srv
+  CTRL_Cmd.srv
 )
 
 add_message_files(
@@ -80,7 +81,6 @@ add_message_files(
   TrajectoryPolynomialPiece.msg
   Hover.msg
   Position.msg
-  CTRL_Cmd.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

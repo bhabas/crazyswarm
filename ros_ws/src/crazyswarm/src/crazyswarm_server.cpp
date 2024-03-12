@@ -170,7 +170,8 @@ public:
     m_subscribeCmdHover=n.subscribe(m_tf_prefix+"/cmd_hover",1,&CrazyflieROS::cmdHoverSetpoint, this);
 
     // CUSTOM SUBSCRIBERS
-    m_subscribeCmdCTRL = n.subscribe("/SAR_DC/CMD_Output_Topic", 1, &CrazyflieROS::cmdCTRL_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
+    // m_subscribeCmdCTRL = n.subscribe("/SAR_DC/CMD_Output_Topic", 1, &CrazyflieROS::cmdCTRL_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
+    m_serviceCmd_Ctrl = n.advertiseService("/CTRL/Cmd_ctrl", &CrazyflieROS::cmdSendCtrlCmd, this);
     m_subscribeViconSpoofer = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPoseUpdate, this, ros::TransportHints().tcpNoDelay());
 
     if (m_enableLogging) {
@@ -400,6 +401,8 @@ public:
     return true;
   }
 
+    
+
   bool setGroupMask(
     crazyswarm::SetGroupMask::Request& req,
     crazyswarm::SetGroupMask::Response& res)
@@ -439,18 +442,35 @@ public:
       // m_sentSetpoint = true;
     // }
   }
-    void cmdCTRL_Cmd_callback(const crazyswarm::CTRL_Cmd::ConstPtr& msg)
+    
+    bool cmdSendCtrlCmd(
+        crazyswarm::CTRL_Cmd::Request& req,
+        crazyswarm::CTRL_Cmd::Response& res)
     {
-        uint16_t cmd_type = msg->cmd_type;
-        float cmd_val1 = msg->cmd_vals.x;
-        float cmd_val2 = msg->cmd_vals.y;
-        float cmd_val3 = msg->cmd_vals.z;
-        float cmd_flag = msg->cmd_flag;
-        float cmd_rx = msg->cmd_rx;
+        uint16_t cmd_type = req.cmd_type;
+        float cmd_val1 = req.cmd_vals.x;
+        float cmd_val2 = req.cmd_vals.y;
+        float cmd_val3 = req.cmd_vals.z;
+        float cmd_flag = req.cmd_flag;
+        float cmd_rx = req.cmd_rx;
 
         m_cf.sendCTRL_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
 
+        return true;
     }
+
+    // void cmdCTRL_Cmd_callback(const crazyswarm::CTRL_Cmd::ConstPtr& msg)
+    // {
+    //     uint16_t cmd_type = msg->cmd_type;
+    //     float cmd_val1 = msg->cmd_vals.x;
+    //     float cmd_val2 = msg->cmd_vals.y;
+    //     float cmd_val3 = msg->cmd_vals.z;
+    //     float cmd_flag = msg->cmd_flag;
+    //     float cmd_rx = msg->cmd_rx;
+
+    //     m_cf.sendCTRL_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
+
+    // }
 
     void sendExternalPosition_CRTP(float x, float y, float z)
         {
@@ -802,6 +822,7 @@ private:
   ros::ServiceServer m_serviceTakeoff;
   ros::ServiceServer m_serviceLand;
   ros::ServiceServer m_serviceGoTo;
+  ros::ServiceServer m_serviceCmd_Ctrl;  
   ros::ServiceServer m_serviceSetGroupMask;
   ros::ServiceServer m_serviceNotifySetpointsStop;
 
@@ -813,7 +834,6 @@ private:
 
   ros::Subscriber m_subscribeCmdHover; // Hover vel subscriber
 
-  ros::Subscriber m_subscribeCmdCTRL;
   ros::Subscriber m_subscribeViconSpoofer;
 
 
