@@ -1277,8 +1277,9 @@ CHECKSIZE(crtpCommanderHighLevelDefineTrajectoryRequest)
 struct crtpCTRL_CmdRequest
 {
     // CONSTRUCTOR
-    crtpCTRL_CmdRequest(uint8_t cmd_type, float cmd_val1, float cmd_val2, float cmd_val3, float cmd_flag, bool cmd_rx)
+    crtpCTRL_CmdRequest(uint16_t cmd_ID, uint8_t cmd_type, float cmd_val1, float cmd_val2, float cmd_val3, float cmd_flag, bool cmd_rx)
         :header(13,2),      // (Port,Channel) This is sent via app layer channel instead of setpoint
+        cmd_ID(cmd_ID),
         cmd_type(cmd_type),
         cmd_val1(cmd_val1),
         cmd_val2(cmd_val2),
@@ -1289,6 +1290,7 @@ struct crtpCTRL_CmdRequest
     // PACKET VALUES
     // REFERENCE (https://www.bitcraze.io/documentation/repository/crazyflie-firmware/master/functional-areas/crtp/)
     const crtp header;  // Header value correlating port value [13], (Streaming setpoints use port 7)
+    uint16_t cmd_ID;     // ID number of command for confirmation
     uint8_t cmd_type;   // Define type of command sent, e.g. Pos ctrl, Vel ctrl, Tumble detection
     float cmd_val1;     // Arbitrary values sent with command type depending on command issued
     float cmd_val2;     // We can send up to [29] bytes of data

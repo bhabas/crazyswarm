@@ -54,6 +54,9 @@
 #include <mutex>
 #include <wordexp.h> // tilde expansion
 
+#include <iostream>
+#include <random>
+
 /*
 Threading
  * There are 2N+1 threads, where N is the number of groups (== number of unique channels)
@@ -143,6 +146,7 @@ public:
     , m_serviceNotifySetpointsStop()
     , m_logBlocks(log_blocks)
     , m_initializedPosition(false)
+    , gen(rd()), dis(0, std::numeric_limits<uint16_t>::max())
   {
     ros::NodeHandle nl("~");
     nl.param("enable_logging", m_enableLogging, false);
@@ -170,9 +174,13 @@ public:
     m_subscribeCmdHover=n.subscribe(m_tf_prefix+"/cmd_hover",1,&CrazyflieROS::cmdHoverSetpoint, this);
 
     // CUSTOM SUBSCRIBERS
-    // m_subscribeCmdCTRL = n.subscribe("/SAR_DC/CMD_Output_Topic", 1, &CrazyflieROS::cmdCTRL_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
+    m_subscribeCmd_RX = n.subscribe("/cf1/CMD_RX", 1, &CrazyflieROS::CMD_RX_callback, this, ros::TransportHints().tcpNoDelay());
     m_serviceCmd_Ctrl = n.advertiseService("/CTRL/Cmd_ctrl", &CrazyflieROS::cmdSendCtrlCmd, this);
     m_subscribeViconSpoofer = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPoseUpdate, this, ros::TransportHints().tcpNoDelay());
+
+    // Create a random device and use it to seed the random number generator
+
+
 
     if (m_enableLogging) {
       m_logFile.open("logcf" + std::to_string(id) + ".csv");
@@ -216,49 +224,6 @@ public:
   void sendPing() {
     m_cf.sendPing();
   }
-
-  // void joyChanged(
-  //       const sensor_msgs::Joy::ConstPtr& msg)
-  // {
-  //   static bool lastState = false;
-  //   // static float x = 0.0;
-  //   // static float y = 0.0;
-  //   // static float z = 1.0;
-  //   // static float yaw = 0;
-  //   // bool changed = false;
-
-  //   // float dx = msg->axes[4];
-  //   // if (fabs(dx) > 0.1) {
-  //   //   x += dx * 0.01;
-  //   //   changed = true;
-  //   // }
-  //   // float dy = msg->axes[3];
-  //   // if (fabs(dy) > 0.1) {
-  //   //   y += dy * 0.01;
-  //   //   changed = true;
-  //   // }
-  //   // float dz = msg->axes[1];
-  //   // if (fabs(dz) > 0.1) {
-  //   //   z += dz * 0.01;
-  //   //   changed = true;
-  //   // }
-  //   // float dyaw = msg->axes[0];
-  //   // if (fabs(dyaw) > 0.1) {
-  //   //   yaw += dyaw * 1.0;
-  //   //   changed = true;
-  //   // }
-
-  //   // if (changed) {
-  //   //   ROS_INFO("[%f, %f, %f, %f]", x, y, z, yaw);
-  //   //   m_cf.trajectoryHover(x, y, z, yaw);
-  //   // }
-
-  //   if (msg->buttons[4] && !lastState) {
-  //     ROS_INFO("hover!");
-  //     m_cf.trajectoryHover(0, 0, 1.0, 0, 2.0);
-  //   }
-  //   lastState = msg->buttons[4];
-  // }
 
 public:
 
@@ -443,10 +408,9 @@ public:
     // }
   }
     
-    bool cmdSendCtrlCmd(
-        crazyswarm::CTRL_Cmd::Request& req,
-        crazyswarm::CTRL_Cmd::Response& res)
+    bool cmdSendCtrlCmd(crazyswarm::CTRL_Cmd::Request& req, crazyswarm::CTRL_Cmd::Response& res)
     {
+        uint16_t cmd_ID = dis(gen);
         uint16_t cmd_type = req.cmd_type;
         float cmd_val1 = req.cmd_vals.x;
         float cmd_val2 = req.cmd_vals.y;
@@ -454,23 +418,26 @@ public:
         float cmd_flag = req.cmd_flag;
         float cmd_rx = req.cmd_rx;
 
-        m_cf.sendCTRL_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
+        ros::Rate rate(2);
+        auto start = ros::Time::now();
+        auto timeout = ros::Duration(5.0); // 5 seconds timeout
+
+        // while (ros::Time::now() - start < timeout)
+        // {
+        //     rate.sleep();
+        // }
+        
+        m_cf.sendCTRL_Cmd(cmd_ID,cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
+
+        
 
         return true;
     }
 
-    // void cmdCTRL_Cmd_callback(const crazyswarm::CTRL_Cmd::ConstPtr& msg)
-    // {
-    //     uint16_t cmd_type = msg->cmd_type;
-    //     float cmd_val1 = msg->cmd_vals.x;
-    //     float cmd_val2 = msg->cmd_vals.y;
-    //     float cmd_val3 = msg->cmd_vals.z;
-    //     float cmd_flag = msg->cmd_flag;
-    //     float cmd_rx = msg->cmd_rx;
-
-    //     m_cf.sendCTRL_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
-
-    // }
+    void CMD_RX_callback(const crazyswarm::GenericLogData::ConstPtr& msg)
+    {
+        // CMD_RX_flag = (bool)msg->values[0];
+    }
 
     void sendExternalPosition_CRTP(float x, float y, float z)
         {
@@ -822,7 +789,6 @@ private:
   ros::ServiceServer m_serviceTakeoff;
   ros::ServiceServer m_serviceLand;
   ros::ServiceServer m_serviceGoTo;
-  ros::ServiceServer m_serviceCmd_Ctrl;  
   ros::ServiceServer m_serviceSetGroupMask;
   ros::ServiceServer m_serviceNotifySetpointsStop;
 
@@ -834,7 +800,14 @@ private:
 
   ros::Subscriber m_subscribeCmdHover; // Hover vel subscriber
 
+  ros::ServiceServer m_serviceCmd_Ctrl;  
+  ros::Subscriber m_subscribeCmd_RX;
   ros::Subscriber m_subscribeViconSpoofer;
+  bool CMD_RX_flag = false;
+
+  std::random_device rd;
+  std::mt19937 gen;
+  std::uniform_int_distribution<uint16_t> dis;
 
 
 
