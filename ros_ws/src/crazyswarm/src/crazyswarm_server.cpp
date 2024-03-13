@@ -175,10 +175,8 @@ public:
 
     // CUSTOM SUBSCRIBERS
     m_subscribeCmd_RX = n.subscribe("/cf1/CMD_RX", 1, &CrazyflieROS::CMD_RX_callback, this, ros::TransportHints().tcpNoDelay());
-    m_serviceCmd_Ctrl = n.advertiseService("/CTRL/Cmd_ctrl", &CrazyflieROS::cmdSendCtrlCmd, this);
+    m_serviceCmd_Ctrl = n.advertiseService("/cf1/Cmd_ctrl", &CrazyflieROS::cmdSendCtrlCmd, this);
     m_subscribeViconSpoofer = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPoseUpdate, this, ros::TransportHints().tcpNoDelay());
-
-    // Create a random device and use it to seed the random number generator
 
 
 
