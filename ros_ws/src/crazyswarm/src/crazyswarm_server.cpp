@@ -171,7 +171,7 @@ public:
 
     // CUSTOM SUBSCRIBERS
     // m_subscribeCmdCTRL = n.subscribe("/SAR_DC/CMD_Output_Topic", 1, &CrazyflieROS::cmdCTRL_Cmd_callback, this, ros::TransportHints().tcpNoDelay());
-    m_serviceCmd_Ctrl = n.advertiseService("/CTRL/Cmd_ctrl", &CrazyflieROS::cmdSendCtrlCmd, this);
+    m_serviceCmd_Ctrl = n.advertiseService("/cf1/Cmd_ctrl", &CrazyflieROS::cmdSendCtrlCmd, this);
     m_subscribeViconSpoofer = n.subscribe("/vicon/cf1/cf1", 1, &CrazyflieROS::ExtPoseUpdate, this, ros::TransportHints().tcpNoDelay());
 
     if (m_enableLogging) {
@@ -458,19 +458,6 @@ public:
 
         return true;
     }
-
-    // void cmdCTRL_Cmd_callback(const crazyswarm::CTRL_Cmd::ConstPtr& msg)
-    // {
-    //     uint16_t cmd_type = msg->cmd_type;
-    //     float cmd_val1 = msg->cmd_vals.x;
-    //     float cmd_val2 = msg->cmd_vals.y;
-    //     float cmd_val3 = msg->cmd_vals.z;
-    //     float cmd_flag = msg->cmd_flag;
-    //     float cmd_rx = msg->cmd_rx;
-
-    //     m_cf.sendCTRL_Cmd(cmd_type,cmd_val1,cmd_val2,cmd_val3,cmd_flag,cmd_rx);
-
-    // }
 
     void sendExternalPosition_CRTP(float x, float y, float z)
         {
