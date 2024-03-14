@@ -131,6 +131,7 @@ public:
     uint16_t thrust);
 
   void sendCTRL_Cmd(
+    uint16_t cmd_ID,
     uint16_t cmd_type,
     float cmd_val1,
     float cmd_val2,
